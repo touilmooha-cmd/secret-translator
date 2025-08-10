@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar">
-<head<link rel="stylesheet" href="style.css">>
+<head>
 <meta charset="UTF-8" />
 <title>محوّل اللغة السرية</title>
-<style>
-  body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; text-align: center; background:#f7f9fb; }
-  .wrap { display:flex; gap:20px; justify-content:center; align-items:flex-start; flex-wrap:wrap; }
-  .col { width:420px; }
-  textarea { width:100%; height:200px; padding:10px; font-size:16px; box-sizing:border-box; }
-  button { padding:10px 14px; margin:8px; cursor:pointer; font-size:15px; }
-  .hint { color:#666; font-size:14px; margin-bottom:10px; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>🔐 محوّل اللغة السرية (فرنسي ⇄ عربي)</h1>
@@ -33,7 +26,6 @@
   </div>
 
 <script>
-/* خريطة من حرف لاتيني -> حرف عربي (كيبورد فرنسي AZERTY) */
 const secretToArabic = {
   'a':'ض','z':'ص','e':'ث','r':'ق','t':'ف','y':'غ','u':'ع','i':'ه','o':'خ','p':'ح',
   'q':'ش','s':'س','d':'ي','f':'ب','g':'ل','h':'ا','j':'ت','k':'ن','l':'م','m':'ك',
@@ -41,7 +33,6 @@ const secretToArabic = {
   'v':'ر', 'n':'ى', ',':'ة'
 };
 
-/* عكس الخريطة: عربي -> سري */
 function invertMap(map){
   const inv = {};
   for (const k in map) inv[map[k]] = k;
@@ -49,12 +40,10 @@ function invertMap(map){
 }
 const arabicToSecret = invertMap(secretToArabic);
 
-/* نطبع بعض أشكال الألف والهمزة لتوحيدها */
 function normalizeArabic(text){
-  return text.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ة'); // نحتفظ بـ ة كما هي (تُحوّل لو وجدت)
+  return text.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ة');
 }
 
-/* تحويل من سري -> عربي */
 function translateSecretToArabic(text){
   let out = '';
   for (let ch of text) {
@@ -63,7 +52,6 @@ function translateSecretToArabic(text){
   return out;
 }
 
-/* تحويل من عربي -> سري (بعد تطبيع الحروف) */
 function translateArabicToSecret(text){
   text = normalizeArabic(text);
   let out = '';
@@ -73,7 +61,6 @@ function translateArabicToSecret(text){
   return out;
 }
 
-/* منع التحديث التكراري */
 let isUpdating = false;
 const arabicEl = document.getElementById('arabic');
 const secretEl = document.getElementById('secret');
