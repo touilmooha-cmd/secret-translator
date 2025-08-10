@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<title>محوّل اللغة السرية</title>
+<style>
+  body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; text-align: center; background:#f7f9fb; }
+  .wrap { display:flex; gap:20px; justify-content:center; align-items:flex-start; flex-wrap:wrap; }
+  .col { width:420px; }
+  textarea { width:100%; height:200px; padding:10px; font-size:16px; box-sizing:border-box; }
+  button { padding:10px 14px; margin:8px; cursor:pointer; font-size:15px; }
+  .hint { color:#666; font-size:14px; margin-bottom:10px; }
+</style>
+</head>
+<body>
+  <h1>🔐 محوّل اللغة السرية (فرنسي ⇄ عربي)</h1>
+  <p class="hint">اكتب بالعربية في العمود الأيمن أو اكتب بالسرية (latin) في العمود الأيسر — يتحوّل تلقائيًا. استخدم أزرار النسخ.</p>
+
+  <div class="wrap">
+    <div class="col">
+      <h3>السرية (لاتيني - LTR)</h3>
+      <textarea id="secret" placeholder="اكتب هنا باللغة السرية (مثال: kul)" dir="ltr"></textarea>
+      <br>
+      <button onclick="copyField('secret')">📋 نسخ النص السري</button>
+    </div>
+
+    <div class="col">
+      <h3>النص العربي (RTL)</h3>
+      <textarea id="arabic" placeholder="اكتب هنا بالعربية (مثال: نعم)" dir="rtl"></textarea>
+      <br>
+      <button onclick="copyField('arabic')">📋 نسخ النص العربي</button>
+    </div>
+  </div>
+
+<script>
+/* خريطة من حرف لاتيني -> حرف عربي (كيبورد فرنسي AZERTY) */
+const secretToArabic = {
+  'a':'ض','z':'ص','e':'ث','r':'ق','t':'ف','y':'غ','u':'ع','i':'ه','o':'خ','p':'ح',
+  'q':'ش','s':'س','d':'ي','f':'ب','g':'ل','h':'ا','j':'ت','k':'ن','l':'م','m':'ك',
+  ';':'و', ':':'ز', '$':'د', '^':'ج', '*':'ذ', 'ù':'ط', 'w':'ئ', 'x':'ء', 'c':'ؤ',
+  'v':'ر', 'n':'ى', ',':'ة'
+};
+
+/* عكس الخريطة: عربي -> سري */
+function invertMap(map){
+  const inv = {};
+  for (const k in map) inv[map[k]] = k;
+  return inv;
+}
+const arabicToSecret = invertMap(secretToArabic);
+
+/* نطبع بعض أشكال الألف والهمزة لتوحيدها */
+function normalizeArabic(text){
+  return text.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ة'); // نحتفظ بـ ة كما هي (تُحوّل لو وجدت)
+}
+
+/* تحويل من سري -> عربي */
+function translateSecretToArabic(text){
+  let out = '';
+  for (let ch of text) {
+    out += (secretToArabic[ch] !== undefined) ? secretToArabic[ch] : ch;
+  }
+  return out;
+}
+
+/* تحويل من عربي -> سري (بعد تطبيع الحروف) */
+function translateArabicToSecret(text){
+  text = normalizeArabic(text);
+  let out = '';
+  for (let ch of text) {
+    out += (arabicToSecret[ch] !== undefined) ? arabicToSecret[ch] : ch;
+  }
+  return out;
+}
+
+/* منع التحديث التكراري */
+let isUpdating = false;
+const arabicEl = document.getElementById('arabic');
+const secretEl = document.getElementById('secret');
+
+arabicEl.addEventListener('input', () => {
+  if (isUpdating) return;
+  isUpdating = true;
+  secretEl.value = translateArabicToSecret(arabicEl.value);
+  isUpdating = false;
+});
+
+secretEl.addEventListener('input', () => {
+  if (isUpdating) return;
+  isUpdating = true;
+  arabicEl.value = translateSecretToArabic(secretEl.value);
+  isUpdating = false;
+});
+
+function copyField(id){
+  const el = document.getElementById(id);
+  el.select();
+  navigator.clipboard.writeText(el.value).then(()=> alert('✅ تم النسخ'));
+}
+</script>
+</body>
+</html>
